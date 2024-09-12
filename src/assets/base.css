@@ -1,0 +1,26 @@
+:root {
+  --c-white: #ffffff;
+  --c-black: #181818;
+
+  --c-text-light: #2c3e50;
+  --c-text-dark: rgba(235, 235, 235, 0.64);
+}
+
+:root {
+  --color-background: var(--c-white);
+  --color-text: var(--c-text-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--c-black);
+    --color-text: var(--c-text-dark);
+  }
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  font-family: Arial, Helvetica, sans-serif;
+}
