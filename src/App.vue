@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import type { Ref } from "vue";
-
-type Directory = {
-	path: String;
-	files: string[];
-	directories: Directory[];
-	isSaved?: boolean;
-};
+import type { Directory } from "./types/types";
+import DirectoryNode from "./components/DirectoryNode.vue";
+import { useDirectoryStore } from "./stores/directory";
 
 const loading = ref(false);
-const directory: Ref<Directory> = ref(
+const dir: Ref<Directory> = ref(
 	JSON.parse(localStorage.getItem("directory")!) || {
-		path: "",
+		path: "file_explorer",
 		files: [],
 		directories: [],
 		isSaved: false,
 	}
 );
+const dirStore = useDirectoryStore();
+
+if (!dir.value.isSaved) {
+	fetchFilepaths();
+}
 
 async function fetchFilepaths() {
 	try {
@@ -33,8 +34,8 @@ async function fetchFilepaths() {
 
 			generateFileStructure(filepaths);
 
-			directory.value.isSaved = true;
-			setLocalDirectory();
+			dir.value.isSaved = true;
+			saveDirectoryLocalStorage();
 		}
 	} catch (error) {
 		console.log(error);
@@ -49,7 +50,7 @@ function generateFileStructure(filepaths: string[]) {
 
 		// If file is in currentDirectory add it to files array already
 		if (splits.length === 1) {
-			directory.value.files.push(splits[0]);
+			dir.value.files.push(splits[0]);
 			return;
 		}
 
@@ -57,18 +58,23 @@ function generateFileStructure(filepaths: string[]) {
 		const desiredPath = splits.slice(0, -1);
 		const fileName = splits[splits.length - 1];
 
-		insertDirectoryRecursively(directory.value, desiredPath, fileName);
+		if (fileName.includes(".")) {
+			const fileDir = getDirectoryRecursively(dir.value, desiredPath);
+			fileDir.files.push(fileName);
+		} else {
+			// Generate empty directory with splits - full path
+			getDirectoryRecursively(dir.value, splits);
+		}
 	});
 }
 
-function insertDirectoryRecursively(
+function getDirectoryRecursively(
 	currentDirectory: Directory,
-	desiredPath: string[],
-	fileName: string
-) {
+	desiredPath: string[]
+): Directory {
+	// Recursion end condition
 	if (desiredPath.length === 0) {
-		currentDirectory.files.push(fileName);
-		return;
+		return currentDirectory;
 	}
 
 	// Check if there is a desired directory on currentDirectory if not then create it
@@ -80,31 +86,62 @@ function insertDirectoryRecursively(
 		});
 	}
 
-	const nextCurrentDirectory = currentDirectory.directories.find((d) => d.path === desiredPath[0])!;
+	const nextCurrentDirectory = currentDirectory.directories.find(
+		(d) => d.path === desiredPath[0]
+	)!;
 
 	// Remove first path item
 	desiredPath.shift();
 
-	insertDirectoryRecursively(nextCurrentDirectory, desiredPath, fileName);
+	return getDirectoryRecursively(nextCurrentDirectory, desiredPath);
 }
 
-function setLocalDirectory() {
-	localStorage.setItem("directory", JSON.stringify(directory.value));
+function saveDirectoryLocalStorage() {
+	localStorage.setItem("directory", JSON.stringify(dir.value));
 }
 
-onMounted(() => {
-	if (!directory.value.isSaved) {
-		fetchFilepaths();
+function deleteActiveDirectory() {
+	if (!dirStore.activeFile) {
+		dirStore.deleteActiveDirectory();
+	} else {
+		dirStore.deleteActiveFile();
 	}
-});
+
+	saveDirectoryLocalStorage();
+}
 </script>
 
 <template>
-	<header></header>
-
 	<main>
-		<h1>File Explorer</h1>
-		<pre>{{ JSON.stringify(directory, null, 4) }}</pre>
+		<div class="h-[10vh]">
+			<h1 class="mt-20 mb-6 text-center text-4xl">File Explorer</h1>
+
+			<div
+				class="flex m-auto justify-center mb-3 gap-2 *:px-2 *:cursor-pointer"
+			>
+				<div class="hover:bg-neutral-800">
+					<v-icon name="px-file-plus" /> Add file
+				</div>
+				<div
+					class="hover:bg-neutral-800"
+					@click="dirStore.setIsDirectoryAddition(true)"
+				>
+					<v-icon name="px-folder-plus" /> Add folder
+				</div>
+				<div
+					class="hover:bg-neutral-800"
+					@click="deleteActiveDirectory"
+				>
+					<v-icon name="px-trash" /> Delete
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="m-auto max-w-72 max-h-[75vh] overflow-y-auto border border-neutral-700 p-4"
+		>
+			<DirectoryNode :directory="dir" :directoryParent="null" />
+		</div>
 	</main>
 </template>
 
