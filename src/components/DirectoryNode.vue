@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import type { Directory } from "../types/types";
 import { useDirectoryStore } from "@/stores/directory";
-import DirectoryFile from "./DirectoryFile.vue";
+import type { Directory } from "@/types/types";
+import { ref, computed } from "vue";
+import DirectoryFile from "@/components/DirectoryFile.vue";
 
 const dirStore = useDirectoryStore();
 
@@ -25,9 +25,9 @@ const directoryIcon = ref(
 );
 
 function clickDirectory() {
-	dirStore.setActiveDirectory(props.directory);
-	dirStore.setParentDirectory(props.directoryParent);
-	dirStore.setActiveFile("");
+	dirStore.$patch({ activeDirectory: props.directory });
+	dirStore.$patch({ activeDirectoryParent: props.directoryParent });
+	dirStore.$patch({ activeFile: "" });
 
 	isDirectoryOpen.value = !isDirectoryOpen.value;
 }
@@ -39,8 +39,15 @@ const isActiveDirectory = computed(
 const isDirectoryAddition = computed(
 	() =>
 		dirStore.activeDirectory === props.directory &&
-		dirStore.isDirectoryAddition
+		dirStore.isAddDirectoryMode
 );
+
+function addDirectory() {
+	if (newDirectoryName.value !== "") {
+		dirStore.addDirectory(newDirectoryName.value);
+		newDirectoryName.value = "";
+	}
+}
 </script>
 
 <template>
@@ -57,7 +64,7 @@ const isDirectoryAddition = computed(
 			<p class="pl-1">{{ directory.path }}</p>
 		</div>
 
-		<div v-if="isDirectoryOpen">
+		<div v-if="isDirectoryOpen || props.directory.isSaved">
 			<div
 				v-if="isDirectoryAddition"
 				class="flex ml-4 gap-1 border px-1 items-center"
@@ -73,8 +80,7 @@ const isDirectoryAddition = computed(
 				<input
 					type="text"
 					class="bg-[#181818] px-1 w-full outline-none"
-					v-on:keyup.enter="dirStore.addDirectory(newDirectoryName)"
-					v-on:keyup.esc="dirStore.setIsDirectoryAddition(false)"
+					v-on:keyup.enter="addDirectory"
 					v-model="newDirectoryName"
 					autofocus
 				/>

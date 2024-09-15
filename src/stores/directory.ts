@@ -3,73 +3,78 @@ import { defineStore } from "pinia";
 import type { Directory } from "@/types/types";
 
 export const useDirectoryStore = defineStore("directoryStore", () => {
-	const activeDirectory: Ref<Directory | null> = ref(null);
-	const parentDirectory: Ref<Directory | null> = ref(null);
-	const activeFile: Ref<string | null> = ref(null);
-	const isDirectoryAddition = ref(false);
-	const isFileAddition = ref(false);
-
-	function setActiveDirectory(directory: Directory) {
-		activeDirectory.value = directory;
-	}
-	function setParentDirectory(directory: Directory | null) {
-		parentDirectory.value = directory;
-	}
-
-	function setActiveFile(file: string) {
-		activeFile.value = file;
-	}
+	const directoryRoot: Ref<Directory> = ref(
+		JSON.parse(localStorage.getItem("directory")!) || {
+			path: "root",
+			files: [],
+			directories: [],
+			isSaved: false,
+		}
+	);
+	const activeDirectory = ref(directoryRoot.value);
+	const activeDirectoryParent: Ref<Directory | null> = ref(null);
+	const activeFile = ref("");
+	const isAddDirectoryMode = ref(false);
+	const isAddFileMode = ref(false);
 
 	function deleteActiveDirectory() {
-		if (parentDirectory.value) {
-			parentDirectory.value.directories =
-				parentDirectory.value.directories.filter(
+		if (activeDirectoryParent.value) {
+			activeDirectoryParent.value.directories =
+				activeDirectoryParent.value.directories.filter(
 					(dir) => dir !== activeDirectory.value
 				);
-
-			activeDirectory.value = null;
 		}
 	}
 
 	function deleteActiveFile() {
-		activeDirectory.value!.files = activeDirectory.value!.files.filter(
+		activeDirectory.value.files = activeDirectory.value.files.filter(
 			(file) => file !== activeFile.value
 		);
-		activeFile.value = null;
+
+		activeFile.value = "";
 	}
 
 	function addDirectory(directoryName: string) {
-		activeDirectory.value?.directories.unshift({
+		// Does directory already exist as a child
+		if (
+			activeDirectory.value.directories.find(
+				(dir) => dir.path === directoryName
+			)
+		)
+			return;
+
+		activeDirectory.value.directories.unshift({
 			path: directoryName,
 			files: [],
 			directories: [],
 		});
 
-		isDirectoryAddition.value = false;
+		isAddDirectoryMode.value = false;
+		saveDirectoryLocalStorage();
 	}
 
 	function addFile(fileName: string) {
-		activeDirectory.value?.files.unshift(fileName);
+		activeDirectory.value.files.unshift(fileName);
 
-		isFileAddition.value = false;
+		isAddFileMode.value = false;
+		saveDirectoryLocalStorage();
 	}
 
-	function setIsDirectoryAddition(bool: boolean) {
-		isDirectoryAddition.value = bool;
+	function saveDirectoryLocalStorage() {
+		localStorage.setItem("directory", JSON.stringify(directoryRoot.value));
 	}
 
 	return {
 		activeDirectory,
 		activeFile,
-		setActiveDirectory,
-		setActiveFile,
 		deleteActiveDirectory,
-		setParentDirectory,
+		activeDirectoryParent,
 		addDirectory,
 		addFile,
 		deleteActiveFile,
-		isDirectoryAddition,
-		isFileAddition,
-		setIsDirectoryAddition,
+		isAddDirectoryMode,
+		isAddFileMode,
+		directoryRoot,
+		saveDirectoryLocalStorage,
 	};
 });

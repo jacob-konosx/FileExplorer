@@ -1,7 +1,6 @@
-import "./main.css";
+import "@/main.css";
 
 import { createApp } from "vue";
-import App from "./App.vue";
 
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import {
@@ -29,6 +28,7 @@ import {
 	PxTrash,
 } from "oh-vue-icons/icons";
 import { createPinia } from "pinia";
+import App from "@/App.vue";
 
 addIcons(
 	ViFileTypeGit,

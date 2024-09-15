@@ -35,8 +35,8 @@ const fileIcon = ref(
 );
 
 function clickFile() {
-	dirStore.setActiveDirectory(props.fileDirectory);
-	dirStore.setActiveFile(props.fileName);
+	dirStore.$patch({ activeDirectory: props.fileDirectory });
+	dirStore.$patch({ activeFile: props.fileName });
 }
 
 const isActiveFile = computed(
