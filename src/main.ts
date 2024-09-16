@@ -56,8 +56,9 @@ addIcons(
 );
 
 const app = createApp(App);
-const pinia = createPinia();
 
+const pinia = createPinia();
 app.use(pinia);
+
 app.component("v-icon", OhVueIcon);
 app.mount("#app");

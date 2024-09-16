@@ -13,7 +13,7 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 	);
 	const activeDirectory = ref(directoryRoot.value);
 	const activeDirectoryParent: Ref<Directory | null> = ref(null);
-	const activeFile = ref("");
+	const activeFile: Ref<string | null> = ref(null);
 	const isAddDirectoryMode = ref(false);
 	const isAddFileMode = ref(false);
 
@@ -31,7 +31,7 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 			(file) => file !== activeFile.value
 		);
 
-		activeFile.value = "";
+		activeFile.value = null;
 	}
 
 	function addDirectory(directoryName: string) {
@@ -54,11 +54,15 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 	}
 
 	function addFile(fileName: string) {
-		if (activeDirectory.value.files.find((file) => file === fileName))
+		if (
+			activeDirectory.value.files.find(
+				(file) =>
+					file.toLocaleLowerCase() === fileName.toLocaleLowerCase()
+			)
+		)
 			return;
 
 		activeDirectory.value.files.unshift(fileName);
-		activeFile.value = fileName;
 
 		isAddFileMode.value = false;
 		saveDirectoryLocalStorage();

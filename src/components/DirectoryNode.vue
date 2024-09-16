@@ -15,7 +15,9 @@ const props = defineProps<{
 	directory: Directory;
 	directoryParent: Directory | null;
 }>();
-const isDirectoryOpen = ref(false);
+
+// If directory doesn't have a parent (is root dir) open automatically
+const isDirectoryOpen = ref(!props.directoryParent);
 const inputValue = ref("");
 
 const directoryIcon = ref(
@@ -64,28 +66,28 @@ function addFile() {
 	<div class="pl-3 select-none">
 		<div
 			@click="clickDirectory"
-			:class="`hover:bg-neutral-800 hover:cursor-pointer pl-1 gap-1 flex items-center ${isActiveDirectory && 'bg-neutral-800'}`"
+			:class="`flex items-center gap-1 pl-1 hover:bg-neutral-800 hover:cursor-pointer ${
+				isActiveDirectory && 'bg-neutral-800'
+			}`"
 		>
-			<div v-if="!props.directory.isSaved">
-				<v-icon v-if="isDirectoryOpen" name="bi-chevron-down" />
-				<v-icon v-else name="hi-chevron-right" />
-			</div>
+			<v-icon v-if="isDirectoryOpen" name="bi-chevron-down" />
+			<v-icon v-else name="hi-chevron-right" />
 
 			<v-icon :name="directoryIcon" />
 			<p>{{ directory.path }}</p>
 		</div>
 
-		<div v-if="isDirectoryOpen || props.directory.isSaved">
+		<div v-if="isDirectoryOpen">
 			<div
 				v-if="isAddDirectoryMode || isAddFileMode"
-				class="flex ml-4 gap-1 border px-1 items-center"
+				class="flex ml-4 gap-1 items-center"
 			>
 				<v-icon v-if="isAddDirectoryMode" name="bi-chevron-down" />
-
 				<v-icon
 					v-if="isAddDirectoryMode"
 					:name="directoryIconMap[inputValue] || 'vi-default-folder'"
 				/>
+
 				<v-icon
 					v-else
 					:name="
@@ -99,7 +101,7 @@ function addFile() {
 
 				<input
 					type="text"
-					class="bg-[#181818] px-1 w-full outline-none"
+					class="w-full outline-none border px-1 bg-[#181818]"
 					v-on:keyup.enter="
 						isAddDirectoryMode ? addDirectory() : addFile()
 					"
