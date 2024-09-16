@@ -5,24 +5,24 @@ export function generateFileStructure(
 	directoryRoot: Directory
 ) {
 	filepaths.forEach((filepath) => {
-		const splits = filepath.split("/");
+		const pathSplit = filepath.split("/");
 
 		// If file is in currentDirectory add it to files array already
-		if (splits.length === 1) {
-			directoryRoot.files.push(splits[0]);
+		if (pathSplit.length === 1) {
+			directoryRoot.files.push(pathSplit[0]);
 			return;
 		}
 
 		// Get the path excluding the file name
-		const desiredPath = splits.slice(0, -1);
-		const fileName = splits[splits.length - 1];
+		const desiredPath = pathSplit.slice(0, -1);
+		const fileName = pathSplit[pathSplit.length - 1];
 
 		if (fileName.includes(".")) {
 			const fileDir = getDirectoryRecursively(directoryRoot, desiredPath);
 			fileDir.files.push(fileName);
 		} else {
 			// Generate empty directory where splits -> full path
-			getDirectoryRecursively(directoryRoot, splits);
+			getDirectoryRecursively(directoryRoot, pathSplit);
 		}
 	});
 
