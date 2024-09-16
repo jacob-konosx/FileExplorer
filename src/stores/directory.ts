@@ -38,7 +38,7 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 		// Does directory already exist as a child
 		if (
 			activeDirectory.value.directories.find(
-				(dir) => dir.path === directoryName
+				(dir) => dir.path.toLowerCase() === directoryName.toLowerCase()
 			)
 		)
 			return;
@@ -54,7 +54,11 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 	}
 
 	function addFile(fileName: string) {
+		if (activeDirectory.value.files.find((file) => file === fileName))
+			return;
+
 		activeDirectory.value.files.unshift(fileName);
+		activeFile.value = fileName;
 
 		isAddFileMode.value = false;
 		saveDirectoryLocalStorage();

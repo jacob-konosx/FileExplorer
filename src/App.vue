@@ -110,13 +110,16 @@ window.addEventListener("keydown", (e) => {
 
 <template>
 	<main>
-		<div class="h-[10vh]">
-			<h1 class="mt-20 mb-4 text-center text-4xl">File Explorer</h1>
+		<div class="max-[15vh] mb-4">
+			<h1 class="mt-12 mb-8 text-center text-4xl">File Explorer</h1>
 
 			<div
-				class="flex m-auto justify-center mb-3 gap-2 *:pt-1 *:px-2 *:cursor-pointer"
+				class="flex m-auto justify-center mb-3 gap-2 *:p-1 *:px-2 *:cursor-pointer"
 			>
-				<div class="hover:bg-neutral-800">
+				<div
+					class="hover:bg-neutral-800"
+					@click="dirStore.$patch({ isAddFileMode: true })"
+				>
 					<v-icon name="px-file-plus" /> Add file
 				</div>
 				<div

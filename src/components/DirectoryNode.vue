@@ -3,6 +3,11 @@ import { useDirectoryStore } from "@/stores/directory";
 import type { Directory } from "@/types/types";
 import { ref, computed } from "vue";
 import DirectoryFile from "@/components/DirectoryFile.vue";
+import {
+	directoryIconMap,
+	fileExtensionIconMap,
+	reservedFileIconMap,
+} from "@/utils/iconMappings";
 
 const dirStore = useDirectoryStore();
 
@@ -11,14 +16,7 @@ const props = defineProps<{
 	directoryParent: Directory | null;
 }>();
 const isDirectoryOpen = ref(false);
-const newDirectoryName = ref("");
-
-// Mapping of directory path to icons
-const directoryIconMap: Record<string, string> = {
-	bin: "vi-folder-type-binary",
-	src: "vi-folder-type-src",
-	utils: "vi-folder-type-tools",
-};
+const inputValue = ref("");
 
 const directoryIcon = ref(
 	directoryIconMap[props.directory.path] || "vi-default-folder"
@@ -36,52 +34,76 @@ const isActiveDirectory = computed(
 	() => dirStore.activeDirectory === props.directory && !dirStore.activeFile
 );
 
-const isDirectoryAddition = computed(
+const isAddDirectoryMode = computed(
 	() =>
 		dirStore.activeDirectory === props.directory &&
 		dirStore.isAddDirectoryMode
 );
 
+const isAddFileMode = computed(
+	() => dirStore.activeDirectory === props.directory && dirStore.isAddFileMode
+);
+
 function addDirectory() {
-	if (newDirectoryName.value !== "") {
-		dirStore.addDirectory(newDirectoryName.value);
-		newDirectoryName.value = "";
+	if (inputValue.value !== "") {
+		dirStore.addDirectory(inputValue.value);
+		inputValue.value = "";
+	}
+}
+
+function addFile() {
+	if (inputValue.value !== "") {
+		dirStore.addFile(inputValue.value);
+		inputValue.value = "";
 	}
 }
 </script>
 
 <template>
 	<!-- Indent padding for every DirectoryNode -->
-	<div class="pl-4 select-none">
+	<div class="pl-3 select-none">
 		<div
 			@click="clickDirectory"
-			:class="`hover:bg-neutral-800 hover:cursor-pointer flex items-center ${isActiveDirectory && 'bg-neutral-800'}`"
+			:class="`hover:bg-neutral-800 hover:cursor-pointer pl-1 gap-1 flex items-center ${isActiveDirectory && 'bg-neutral-800'}`"
 		>
-			<v-icon v-if="isDirectoryOpen" name="bi-chevron-down" />
-			<v-icon v-else name="hi-chevron-right" />
+			<div v-if="!props.directory.isSaved">
+				<v-icon v-if="isDirectoryOpen" name="bi-chevron-down" />
+				<v-icon v-else name="hi-chevron-right" />
+			</div>
 
 			<v-icon :name="directoryIcon" />
-			<p class="pl-1">{{ directory.path }}</p>
+			<p>{{ directory.path }}</p>
 		</div>
 
 		<div v-if="isDirectoryOpen || props.directory.isSaved">
 			<div
-				v-if="isDirectoryAddition"
+				v-if="isAddDirectoryMode || isAddFileMode"
 				class="flex ml-4 gap-1 border px-1 items-center"
 			>
-				<v-icon name="bi-chevron-down" />
+				<v-icon v-if="isAddDirectoryMode" name="bi-chevron-down" />
+
 				<v-icon
+					v-if="isAddDirectoryMode"
+					:name="directoryIconMap[inputValue] || 'vi-default-folder'"
+				/>
+				<v-icon
+					v-else
 					:name="
-						directoryIconMap[newDirectoryName] ||
-						'vi-default-folder'
+						reservedFileIconMap[inputValue] ||
+						fileExtensionIconMap[
+							inputValue.split('.').pop() || ''
+						] ||
+						'vi-default-file'
 					"
 				/>
 
 				<input
 					type="text"
 					class="bg-[#181818] px-1 w-full outline-none"
-					v-on:keyup.enter="addDirectory"
-					v-model="newDirectoryName"
+					v-on:keyup.enter="
+						isAddDirectoryMode ? addDirectory() : addFile()
+					"
+					v-model="inputValue"
 					autofocus
 				/>
 			</div>
@@ -93,14 +115,9 @@ function addDirectory() {
 				:directoryParent="props.directory"
 			/>
 
-			<!-- Padding indent added for files in side directory -->
-			<div
-				:class="`hover:bg-neutral-800 hover:cursor-pointer pl-4`"
-				v-for="fileName in props.directory.files"
-				:key="fileName"
-			>
+			<template v-for="fileName in props.directory.files" :key="fileName">
 				<DirectoryFile :fileName :fileDirectory="props.directory" />
-			</div>
+			</template>
 		</div>
 	</div>
 </template>
