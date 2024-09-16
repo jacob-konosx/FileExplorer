@@ -16,22 +16,6 @@ const props = defineProps<{
 	directoryParent: Directory | null;
 }>();
 
-// If directory doesn't have a parent (is root dir) open automatically
-const isDirectoryOpen = ref(!props.directoryParent);
-const inputValue = ref("");
-
-const directoryIcon = ref(
-	directoryIconMap[props.directory.path] || "vi-default-folder"
-);
-
-function clickDirectory() {
-	dirStore.$patch({ activeDirectory: props.directory });
-	dirStore.$patch({ activeDirectoryParent: props.directoryParent });
-	dirStore.$patch({ activeFile: "" });
-
-	isDirectoryOpen.value = !isDirectoryOpen.value;
-}
-
 const isActiveDirectory = computed(
 	() => dirStore.activeDirectory === props.directory && !dirStore.activeFile
 );
@@ -46,17 +30,45 @@ const isAddFileMode = computed(
 	() => dirStore.activeDirectory === props.directory && dirStore.isAddFileMode
 );
 
+const visibilityToggle = ref(!props.directoryParent);
+
+// Visibility split to separate reactive computed (read only) state from user toggle click state
+const isDirectoryOpen = computed(
+	() =>
+		isAddDirectoryMode.value ||
+		isAddFileMode.value ||
+		visibilityToggle.value
+);
+
+const inputValue = ref("");
+
+const directoryIcon = ref(
+	directoryIconMap[props.directory.path] || "vi-default-folder"
+);
+
+function clickDirectory() {
+	dirStore.$patch({ activeDirectory: props.directory });
+	dirStore.$patch({ activeDirectoryParent: props.directoryParent });
+	dirStore.$patch({ activeFile: "" });
+
+	visibilityToggle.value = !visibilityToggle.value;
+}
+
 function addDirectory() {
 	if (inputValue.value !== "") {
 		dirStore.addDirectory(inputValue.value);
+
 		inputValue.value = "";
+		visibilityToggle.value = true;
 	}
 }
 
 function addFile() {
 	if (inputValue.value !== "") {
 		dirStore.addFile(inputValue.value);
+
 		inputValue.value = "";
+		visibilityToggle.value = true;
 	}
 }
 </script>
