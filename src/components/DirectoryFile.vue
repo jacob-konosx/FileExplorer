@@ -21,8 +21,12 @@ const fileIcon = ref(
 );
 
 function clickFile() {
-	dirStore.$patch({ activeDirectory: props.fileDirectory });
-	dirStore.$patch({ activeFile: props.fileName });
+	dirStore.$patch({
+		activeDirectory: props.fileDirectory,
+		activeFile: props.fileName,
+		isAddDirectoryMode: false,
+		isAddFileMode: false,
+	});
 }
 
 const isActiveFile = computed(
@@ -34,13 +38,13 @@ const isActiveFile = computed(
 
 <template>
 	<div
-		:class="`flex gap-1 items-center pl-4 whitespace-nowrap overflow-ellipsis overflow-hidden hover:bg-neutral-800 hover:cursor-pointer ${
+		:class="`pl-4 whitespace-nowrap overflow-ellipsis overflow-hidden hover:bg-neutral-800 hover:cursor-pointer ${
 			isActiveFile && 'bg-neutral-800'
 		}`"
 		@click="clickFile"
 	>
 		<v-icon :name="fileIcon" />
-		<span>
+		<span class="pl-1">
 			{{ props.fileName }}
 		</span>
 	</div>

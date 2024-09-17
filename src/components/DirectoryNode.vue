@@ -47,9 +47,13 @@ const directoryIcon = ref(
 );
 
 function clickDirectory() {
-	dirStore.$patch({ activeDirectory: props.directory });
-	dirStore.$patch({ activeDirectoryParent: props.directoryParent });
-	dirStore.$patch({ activeFile: "" });
+	dirStore.$patch({
+		activeDirectory: props.directory,
+		activeDirectoryParent: props.directoryParent,
+		activeFile: "",
+		isAddFileMode: false,
+		isAddDirectoryMode: false,
+	});
 
 	visibilityToggle.value = !visibilityToggle.value;
 }

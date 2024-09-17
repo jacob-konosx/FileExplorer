@@ -46,8 +46,7 @@ function deleteActiveEntity() {
 
 window.addEventListener("keydown", (e) => {
 	if (e.key == "Escape") {
-		dirStore.$patch({ isAddDirectoryMode: false });
-		dirStore.$patch({ isAddFileMode: false });
+		dirStore.$patch({ isAddDirectoryMode: false, isAddFileMode: false });
 	}
 });
 </script>
@@ -59,13 +58,23 @@ window.addEventListener("keydown", (e) => {
 		<div class="flex justify-center gap-2 mb-2 *:p-1 *:cursor-pointer">
 			<div
 				class="hover:bg-neutral-800"
-				@click="dirStore.$patch({ isAddFileMode: true })"
+				@click="
+					dirStore.$patch({
+						isAddFileMode: true,
+						isAddDirectoryMode: false,
+					})
+				"
 			>
 				<v-icon name="px-file-plus" /> Add file
 			</div>
 			<div
 				class="hover:bg-neutral-800"
-				@click="dirStore.$patch({ isAddDirectoryMode: true })"
+				@click="
+					dirStore.$patch({
+						isAddDirectoryMode: true,
+						isAddFileMode: false,
+					})
+				"
 			>
 				<v-icon name="px-folder-plus" /> Add folder
 			</div>
@@ -77,7 +86,7 @@ window.addEventListener("keydown", (e) => {
 		<div v-if="isLoading" class="text-center">Loading...</div>
 		<div
 			v-else
-			class="m-auto max-w-72 max-h-[75vh] overflow-y-auto border border-neutral-700 py-3 pr-3"
+			class="m-auto w-72 max-h-[75vh] resize-x overflow-y-auto border border-neutral-700 py-3 pr-3"
 		>
 			<DirectoryNode
 				:directory="dirStore.directoryRoot"
