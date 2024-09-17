@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDirectoryStore } from "@/stores/directory";
+import { useDirectoryStore } from "@/stores/store";
 import type { Directory } from "@/types/types";
 import {
 	fileExtensionIconMap,

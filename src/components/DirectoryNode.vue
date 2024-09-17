@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDirectoryStore } from "@/stores/directory";
+import { useDirectoryStore } from "@/stores/store";
 import type { Directory } from "@/types/types";
 import { ref, computed } from "vue";
 import DirectoryFile from "@/components/DirectoryFile.vue";
@@ -79,7 +79,7 @@ function addFile() {
 
 <template>
 	<!-- Indent padding for every DirectoryNode -->
-	<div class="pl-3 select-none min-w-full w-max">
+	<div class="pl-3 select-none min-w-full w-fit">
 		<div
 			@click="clickDirectory"
 			:class="`flex items-center gap-1 px-1 hover:bg-neutral-800 hover:cursor-pointer ${

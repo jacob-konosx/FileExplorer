@@ -43,11 +43,15 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 		)
 			return;
 
-		activeDirectory.value.directories.unshift({
+		const createdDirectory: Directory = {
 			path: directoryName,
 			files: [],
 			directories: [],
-		});
+		};
+
+		activeDirectory.value.directories.unshift(createdDirectory);
+
+		activeDirectory.value = createdDirectory;
 
 		isAddDirectoryMode.value = false;
 		saveDirectoryLocalStorage();
@@ -63,6 +67,8 @@ export const useDirectoryStore = defineStore("directoryStore", () => {
 			return;
 
 		activeDirectory.value.files.unshift(fileName);
+
+		activeFile.value = fileName;
 
 		isAddFileMode.value = false;
 		saveDirectoryLocalStorage();

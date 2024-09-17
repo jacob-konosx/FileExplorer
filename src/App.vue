@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDirectoryStore } from "@/stores/directory";
+import { useDirectoryStore } from "@/stores/store";
 import DirectoryNode from "@/components/DirectoryNode.vue";
 import { generateFileStructure } from "@/utils/directory";
 import { ref } from "vue";
