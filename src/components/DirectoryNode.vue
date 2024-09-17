@@ -79,10 +79,10 @@ function addFile() {
 
 <template>
 	<!-- Indent padding for every DirectoryNode -->
-	<div class="pl-3 select-none">
+	<div class="pl-3 select-none min-w-full w-max">
 		<div
 			@click="clickDirectory"
-			:class="`flex items-center gap-1 pl-1 hover:bg-neutral-800 hover:cursor-pointer ${
+			:class="`flex items-center gap-1 px-1 hover:bg-neutral-800 hover:cursor-pointer ${
 				isActiveDirectory && 'bg-neutral-800'
 			}`"
 		>

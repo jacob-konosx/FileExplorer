@@ -86,7 +86,7 @@ window.addEventListener("keydown", (e) => {
 		<div v-if="isLoading" class="text-center">Loading...</div>
 		<div
 			v-else
-			class="m-auto w-72 max-h-[75vh] resize-x overflow-y-auto border border-neutral-700 py-3 pr-3"
+			class="m-auto w-72 max-h-[75vh] resize-x overflow-auto border border-neutral-700 py-3 pr-3"
 		>
 			<DirectoryNode
 				:directory="dirStore.directoryRoot"
