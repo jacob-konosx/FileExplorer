@@ -26,6 +26,7 @@ import {
 	PxFilePlus,
 	PxFolderPlus,
 	PxTrash,
+	ViFileTypeJs,
 } from "oh-vue-icons/icons";
 import { createPinia } from "pinia";
 import App from "@/App.vue";
@@ -52,7 +53,8 @@ addIcons(
 	ViFileTypeXml,
 	PxFilePlus,
 	PxFolderPlus,
-	PxTrash
+	PxTrash,
+	ViFileTypeJs
 );
 
 const app = createApp(App);

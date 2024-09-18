@@ -21,4 +21,5 @@ export const fileExtensionIconMap: Record<string, string> = {
 	json: "vi-file-type-json",
 	log: "vi-file-type-log",
 	xml: "vi-file-type-xml",
+	js: "vi-file-type-js"
 };
