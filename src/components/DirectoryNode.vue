@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDirectoryStore } from "@/stores/store";
 import type { Directory } from "@/types/types";
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import DirectoryFile from "@/components/DirectoryFile.vue";
 import {
 	directoryIconMap,
@@ -16,6 +16,11 @@ const props = defineProps<{
 	directoryParent: Directory | null;
 }>();
 
+const visibilityToggle = ref(!props.directoryParent);
+const inputValue = ref("");
+// Bind input to ref for watch() access
+const inputRef = ref<HTMLInputElement | null>(null);
+
 const isActiveDirectory = computed(
 	() => dirStore.activeDirectory === props.directory && !dirStore.activeFile
 );
@@ -29,9 +34,6 @@ const isAddDirectoryMode = computed(
 const isAddFileMode = computed(
 	() => dirStore.activeDirectory === props.directory && dirStore.isAddFileMode
 );
-
-const visibilityToggle = ref(!props.directoryParent);
-
 // Visibility split to separate reactive computed (read only) state from user toggle click state
 const isDirectoryOpen = computed(
 	() =>
@@ -39,8 +41,6 @@ const isDirectoryOpen = computed(
 		isAddFileMode.value ||
 		visibilityToggle.value
 );
-
-const inputValue = ref("");
 
 const directoryIcon = ref(
 	directoryIconMap[props.directory.path] || "vi-default-folder"
@@ -75,6 +75,18 @@ function addFile() {
 		visibilityToggle.value = true;
 	}
 }
+
+// Watch for either insert mode change and focus on input element
+watch(
+	[isAddDirectoryMode, isAddFileMode],
+	async ([newAddDirectoryMode, newAddFileMode]) => {
+		if (newAddDirectoryMode || newAddFileMode) {
+			// Wait for the DOM update to complete after a state change
+			await nextTick();
+			inputRef.value?.focus();
+		}
+	}
+);
 </script>
 
 <template>
@@ -90,7 +102,9 @@ function addFile() {
 			<v-icon v-else name="hi-chevron-right" />
 
 			<v-icon :name="directoryIcon" />
-			<p class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{ directory.path }}</p>
+			<p class="whitespace-nowrap overflow-ellipsis overflow-hidden">
+				{{ directory.path }}
+			</p>
 		</div>
 
 		<div v-if="isDirectoryOpen">
@@ -122,6 +136,7 @@ function addFile() {
 						isAddDirectoryMode ? addDirectory() : addFile()
 					"
 					v-model="inputValue"
+					ref="inputRef"
 					autofocus
 				/>
 			</div>
