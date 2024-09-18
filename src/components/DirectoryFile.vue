@@ -38,14 +38,14 @@ const isActiveFile = computed(
 
 <template>
 	<div
-		:class="`pl-4 whitespace-nowrap overflow-ellipsis overflow-hidden hover:bg-neutral-800 hover:cursor-pointer ${
+		:class="`flex items-center gap-1 pl-4 hover:bg-neutral-800 hover:cursor-pointer ${
 			isActiveFile && 'bg-neutral-800'
 		}`"
 		@click="clickFile"
 	>
 		<v-icon :name="fileIcon" />
-		<span class="pl-1">
+		<p class="whitespace-nowrap overflow-ellipsis overflow-hidden">
 			{{ props.fileName }}
-		</span>
+		</p>
 	</div>
 </template>

@@ -79,7 +79,7 @@ function addFile() {
 
 <template>
 	<!-- Indent padding for every DirectoryNode -->
-	<div class="pl-3 select-none min-w-full w-fit">
+	<div class="pl-3 select-none">
 		<div
 			@click="clickDirectory"
 			:class="`flex items-center gap-1 px-1 hover:bg-neutral-800 hover:cursor-pointer ${
@@ -90,7 +90,7 @@ function addFile() {
 			<v-icon v-else name="hi-chevron-right" />
 
 			<v-icon :name="directoryIcon" />
-			<p>{{ directory.path }}</p>
+			<p class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{ directory.path }}</p>
 		</div>
 
 		<div v-if="isDirectoryOpen">
