@@ -53,7 +53,7 @@ window.addEventListener("keydown", (e) => {
 
 <template>
 	<main>
-		<h1 class="text-center text-4xl mb-8 mt-6 md:mt-14">File Explorer</h1>
+		<h1 class="text-center text-4xl mb-8 mt-6 sm:mt-14">File Explorer</h1>
 
 		<div class="flex justify-center gap-2 mb-2 *:p-1 *:cursor-pointer">
 			<div
@@ -84,11 +84,10 @@ window.addEventListener("keydown", (e) => {
 		</div>
 
 		<div v-if="isLoading" class="text-center">Loading...</div>
-		<div
-			v-else
-			class="m-auto w-min"
-		>
-			<div class="mx-4 min-w-44 md:w-72 max-h-[73vh] resize-x overflow-auto border border-neutral-700 py-3 pr-3">
+		<div v-else class="m-auto sm:w-72">
+			<div
+				class="mx-4 min-w-44 max-h-[73vh] resize-x overflow-auto border border-neutral-700 py-3 pr-3"
+			>
 				<DirectoryNode
 					:directory="dirStore.directoryRoot"
 					:directoryParent="null"
