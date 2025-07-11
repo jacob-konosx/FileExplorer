@@ -7,7 +7,7 @@ export function generateFileStructure(
 	filepaths.forEach((filepath) => {
 		const pathSplit = filepath.split("/");
 
-		// If file is in currentDirectory add it to files array already
+		// If path is a file is in dirrectoryRoot, add it to files array
 		if (pathSplit.length === 1) {
 			directoryRoot.files.push(pathSplit[0]);
 			return;

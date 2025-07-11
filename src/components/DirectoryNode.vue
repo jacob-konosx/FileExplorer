@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDirectoryStore } from "@/stores/store";
 import type { Directory } from "@/types/types";
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import DirectoryFile from "@/components/DirectoryFile.vue";
 import {
 	directoryIconMap,
